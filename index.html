@@ -228,6 +228,33 @@ body{background:radial-gradient(1200px 500px at 85% -10%,#e9f4ec 0%,transparent 
 .scroll{scrollbar-width:thin;scrollbar-color:#c4d6c8 transparent}
 .brand .mark{box-shadow:0 6px 14px rgba(30,60,40,.18)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}html{scroll-behavior:auto}}
+/* ===== PRO POLISH 2: bold premium theme ===== */
+@keyframes sheenDrift{0%{transform:translateX(-35%) rotate(8deg)}50%{transform:translateX(35%) rotate(8deg)}100%{transform:translateX(-35%) rotate(8deg)}}
+body{background:radial-gradient(1100px 480px at 90% -10%,#dff0e3 0%,transparent 60%),radial-gradient(900px 420px at -10% 0%,#e7f3ea 0%,transparent 55%),radial-gradient(rgba(30,111,60,.06) 1px,transparent 1.6px),#F5F7F5;background-size:auto,auto,22px 22px,auto}
+.side{background:linear-gradient(180deg,#0b3120 0%,#104a2c 55%,#166534 100%);border-right:0;color:#e9f4ed;box-shadow:8px 0 28px rgba(12,53,32,.25)}
+.brand b{color:#fff}
+.brand small{color:#a9cbb3}
+.grouplabel{color:#8fb89b}
+.nav a{color:#cfe6d5}
+.nav a svg{opacity:.9}
+.nav a:not(.active):hover{background:rgba(255,255,255,.12);color:#fff;transform:translateX(2px)}
+.nav a.active{background:#fff;color:#14532d;box-shadow:0 10px 22px rgba(0,0,0,.3)}
+.side .foot{color:#8fb89b}
+.top .search,.top .iconbtn{background:rgba(255,255,255,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.pagehead h1{letter-spacing:-.02em}
+.stat .big{letter-spacing:-.02em}
+.stat{position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--brand-2),var(--brand))}
+.stat.green::before{display:none}
+.stat.green::after{animation:sheenDrift 7s ease-in-out infinite}
+.dtable th{background:linear-gradient(180deg,#1c8344,#145c30);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.dtable th:hover{background:linear-gradient(180deg,#22a04e,#17703a)}
+.dtable{border-radius:12px;overflow:hidden}
+.btn.solid{background:linear-gradient(180deg,#28a657,#157a37);box-shadow:0 8px 20px rgba(21,122,55,.35)}
+.chip.active{background:linear-gradient(180deg,#249252,#1a6b38);box-shadow:0 6px 16px rgba(21,122,55,.4)}
+.pill{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 6px rgba(30,60,40,.12)}
+.toast{border-top:3px solid var(--brand-2)}
+#view-status .card>div[style*="overflow"]{border:1px solid rgba(30,111,60,.14);box-shadow:inset 0 2px 10px rgba(30,60,40,.06)}
 </style>
 </head>
 <body>
