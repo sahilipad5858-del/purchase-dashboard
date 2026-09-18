@@ -335,7 +335,7 @@ async function fetchFrom(url){
     const msgs=[];let eose=false;
     const to=setTimeout(function(){cleanup();resolve({list:msgs,eose:eose})},CLOUD.timeoutMs);
     function cleanup(){clearTimeout(to);try{ws.removeEventListener('message',onm)}catch(e){}}
-    function onm(ev){let d=null;try{d=JSON.parse(ev.data)}catch(e){return}if(d&&d[0]==='EVENT'&&d[1]&&d[1].pubkey===CLOUD.pub){msgs.push(d[1])}if(d&&d[0]==='EOSE'){eose=true;cleanup();resolve({list:msgs,eose:eose})}}
+    function onm(ev){let d=null;try{d=JSON.parse(ev.data)}catch(e){return}if(d&&d[0]==='EVENT'&&d[2]&&d[2].pubkey===CLOUD.pub){msgs.push(d[2])}if(d&&d[0]==='EOSE'){eose=true;cleanup();resolve({list:msgs,eose:eose})}}
     try{ws.addEventListener('message',onm)}catch(e){cleanup();resolve({list:msgs,eose:eose})}
   });
   try{ws.close()}catch(e){}
