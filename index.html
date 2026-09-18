@@ -279,13 +279,12 @@ function renderFollowups(q){q=(q||'').toLowerCase();const list=DATA.map((o,idx)=
 function buildMailTable(o,rows){
 const codeOf=function(s){const m=String(s).match(/\[([^\]]+)\]\s*$/);return m?m[1]:'-'};
 const nameOf=function(s){return String(s).replace(/\s*\[[^\]]+\]\s*$/,'')};
-let h='<p style="font-family:Arial,sans-serif;font-size:13px;color:#1c2420;margin:0 0 8px"><b>Follow-up: PO '+esc(o.po)+' dated '+esc(dstr(o.date))+' - delivery overdue by '+o.days+' days ('+esc(o.vendor)+')</b><br><span style="color:#6B7280">Vendor: '+esc(o.vendor)+' | Due: '+esc(dstr(o.due))+'</span></p>';
-h+='<table border="1" cellpadding="6" cellspacing="0" bordercolor="#A6A6A6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;color:#1c2420"><thead><tr>';
+let h='<table border="1" cellpadding="6" cellspacing="0" bordercolor="#A6A6A6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;color:#1c2420"><thead><tr>';
 const heads=['PO No','Item Code','Item Name','Order Qty','Recd Qty','Bal Qty'],aligns=['left','left','left','right','right','right'];
 for(let i=0;i<heads.length;i++){h+='<th align="center" bgcolor="#2F75B5" style="background:#2F75B5;color:#ffffff;padding:7px 10px;white-space:nowrap;font-size:12px;border:1px solid #2F75B5">'+heads[i]+'</th>'}
 h+='</tr></thead><tbody>';
 rows.forEach(function(x,i){const last=i===rows.length-1;const bg='#ffffff';const cells=[x.po,codeOf(x.item),nameOf(x.item),x.qty,x.recv,x.todel];h+='<tr>';for(let j=0;j<cells.length;j++){h+='<td align="'+aligns[j]+'" bgcolor="'+bg+'" style="padding:6px 10px;background:'+bg+';border:1px solid #A6A6A6;'+(j>=3?'white-space:nowrap;':'')+(last?'border-bottom:3px solid #2F75B5;':'')+'">'+esc(cells[j])+'</td>'}h+='</tr>'});
-return h+'</tbody></table><p style="font-family:Arial,sans-serif;font-size:12px;color:#6B7280">Kindly confirm the revised dispatch / delivery date and share transporter + LR / consignment copy at the earliest.</p>';
+return h+'</tbody></table>';
 }
 async function remind(btn,idx){const o=DATA[idx];const rows=DATA.filter(x=>x.po===o.po);const codeOf=s=>{const m=s.match(/\[([^\]]+)\]\s*$/);return m?m[1]:'-'};const nameOf=s=>s.replace(/\s*\[[^\]]+\]\s*$/,'').slice(0,34);const cleanS=function(s){return String(s).replace(/\s+/g,' ').trim()};
 const fmtQ=function(v){const n=parseFloat(String(v).replace(/,/g,''));if(!isFinite(n))return v;const neg=n<0,a=Math.abs(n);const parts=String(a).split('.');let int=parts[0];const last3=int.slice(-3);let rest=int.slice(0,-3);if(rest){rest=rest.replace(/\B(?=(\d{2})+(?!\d))/g,',');int=rest+','+last3}else{int=last3}return (neg?'-':'')+int+(parts[1]?'.'+parts[1]:'')};
