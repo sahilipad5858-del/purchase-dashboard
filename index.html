@@ -211,8 +211,6 @@ img,svg,table{max-width:100%}
 </div>
 <div class="right">
 <div class="card"><h3>Follow-ups Due</h3><div class="sub" id="folsub"></div><div class="scroll" id="followups"></div></div>
-<div class="card dark"><h3>GRN &amp; Inward</h3><div class="sub" id="grnsub"></div><div class="exp"><div><b id="grnGot">0</b><span>Received today</span></div><div><b id="grnExp">6</b><span>Expected today</span></div></div><div id="inwards"></div></div>
-<div class="card"><h3>Daily Remarks</h3><div class="sub">Reference only - stored in this browser</div><div style="display:flex;gap:8px;margin-bottom:8px"><input type="date" id="rmDate" style="border:1px solid #e0e6e0;border-radius:10px;padding:8px;font:inherit;font-size:12.5px;flex:1"><button class="mini a" onclick="saveRemark()">Save</button></div><textarea id="rmText" rows="2" placeholder="e.g. Called Yuva Polyprint - film dispatch on Friday" style="width:100%;border:1px solid #e0e6e0;border-radius:10px;padding:9px;font:inherit;font-size:12.5px;resize:vertical"></textarea><div id="remarks" style="margin-top:6px"></div></div>
 </div>
 <div class="card"><h3>Status Windows</h3><div class="sub" id="winsub"></div><div class="wingrid" id="statusWindows"></div></div>
 </div>
@@ -364,16 +362,15 @@ function setSt(idx,v){const o=DATA[idx];if(!o){toast('Row not found - please re-
 function resetOverrides(){STOV={};try{localStorage.removeItem('mtc_status_v1')}catch(e){}applyOverrides();refreshAll();$('sq').value='';renderStatus('');toast('All statuses back to auto')}
 /* ===== end Update Status ===== */
 
-function refreshAll(){applyOverrides();stats(cur);spend();vendors();gauge();renderFollowups($('q').value.trim().toLowerCase());renderWindows();grn()}
+function refreshAll(){applyOverrides();stats(cur);spend();vendors();gauge();renderFollowups($('q').value.trim().toLowerCase());renderWindows()}
 function loadRemarks(){try{return safeArr(JSON.parse(localStorage.getItem('mtc_remarks_v1')))}catch(e){return[]}}
 function renderRemarks(){const R=loadRemarks().sort((a,b)=>String(b.d).localeCompare(String(a.d)));$('remarks').innerHTML=R.length?R.map(r=>'<div class="rmrow"><b>'+String(r.d).split('-').reverse().join('/')+'</b> <small>'+String(r.t).replace(/</g,'&lt;')+'</small><br><button class="mini h" style="padding:3px 9px;font-size:11px;margin-top:4px" onclick="delRemark('+r.id+')">Delete</button></div>').join(''):'<div class="sub">No remarks yet - saved in this browser only.</div>'}
 function saveRemark(){const d=$('rmDate').value||TODAY,t=$('rmText').value.trim();if(!t){toast('Type a remark first');return}const R=loadRemarks();R.push({id:Date.now(),d:d,t:t});try{localStorage.setItem('mtc_remarks_v1',JSON.stringify(R))}catch(e){}$('rmText').value='';renderRemarks();toast('Remark saved for '+d)}
 function delRemark(id){try{localStorage.setItem('mtc_remarks_v1',JSON.stringify(loadRemarks().filter(r=>r.id!==id)))}catch(e){}renderRemarks();toast('Remark deleted')}
 try{const _cc=JSON.parse(localStorage.getItem('mtc_cloud_data'));if(_cc&&Array.isArray(_cc.data)&&_cc.data.length){DATA=_cc.data;IMPORT_D='shared cloud data ('+_cc.data.length+' lines)'}}catch(e){}
 let _stored=null;try{_stored=JSON.parse(localStorage.getItem('mtc_data_v1'))}catch(e){}if(_stored&&(_stored.tsv||_stored.payload)){try{if(typeof _stored.tsv==='string'){const _p=parseTSV(_stored.tsv);if(_p&&_p.length){DATA=_p;IMPORT_D=String(_stored.d||IMPORT_D)}}else if(_stored.kind==='xlsx'&&typeof _stored.payload==='string'){const _xr=xlsxToRows(unb64(_stored.payload));const _p=_xr?rowsToRecords(_xr):null;if(_p&&_p.length){DATA=_p;IMPORT_D=String(_stored.d||IMPORT_D)}}else if(typeof _stored.payload==='string'){const _p=parseTSV(_stored.payload);if(_p&&_p.length){DATA=_p;IMPORT_D=String(_stored.d||IMPORT_D)}}else{toast('Saved import was unreadable - using built-in data')}}catch(err){}}
-$('rmDate').value=TODAY;
 $('filepick').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const buf=new Uint8Array(rd.result||[]);const isX=buf[0]===80&&buf[1]===75;let recs=null;if(isX){const xr=xlsxToRows(buf);if(!xr){toast('Could not read that Excel file - open it in Excel, Save As CSV and import that');return}recs=rowsToRecords(xr);if(!recs||!recs.length){toast('No PO lines found in that Excel sheet');return}}else{let tx='';try{tx=new TextDecoder('utf-8').decode(buf)}catch(err){tx=String.fromCharCode.apply(null,buf)}recs=parseTSV(tx);if(!recs)return;if(!recs.length){toast('Header read OK but no PO lines found - check the export scope/filters');return}}DATA=recs;try{localStorage.removeItem('mtc_cloud_data')}catch(err){}IMPORT_D=f.name+' (imported '+dstr(TODAY)+')';try{localStorage.setItem('mtc_data_v1',JSON.stringify({d:IMPORT_D,name:f.name,kind:isX?'xlsx':'text',payload:isX?b64(buf):new TextDecoder('utf-8').decode(buf)}))}catch(err){}refreshAll();toast('Dashboard updated: '+recs.length+' lines from '+f.name);e.target.value=''};rd.readAsArrayBuffer(f)});
-refreshAll();renderRemarks();renderCustomChips();try{renderStatus(($('sq').value||'').trim().toLowerCase());}catch(e){}$('sq').addEventListener('input',e=>renderStatus(e.target.value.trim().toLowerCase()));(function(){const need=['view-dash','view-status','navDash','navStatus','sttable','stlist','sq','fqStatus','fqVendor','mSort','fqPlant','newSt','customChips','toast','subtitle','followups','dynStats','srcfoot','rmDate','rmText','remarks','spend','vendors','gauge','inwards','grnsub','grnGot','grnExp','folsub'];const miss=need.filter(id=>!document.getElementById(id));if(miss.length)toast('Page incomplete - missing: '+miss.join(', ')+'. Hard-refresh (Ctrl+Shift+R)')})();
+refreshAll();renderCustomChips();try{renderStatus(($('sq').value||'').trim().toLowerCase());}catch(e){}$('sq').addEventListener('input',e=>renderStatus(e.target.value.trim().toLowerCase()));(function(){const need=['view-dash','view-status','navDash','navStatus','sttable','stlist','sq','fqStatus','fqVendor','mSort','fqPlant','newSt','customChips','toast','subtitle','followups','dynStats','srcfoot','spend','vendors','gauge','folsub'];const miss=need.filter(id=>!document.getElementById(id));if(miss.length)toast('Page incomplete - missing: '+miss.join(', ')+'. Hard-refresh (Ctrl+Shift+R)')})();
 </script>
 <script type="module">
 import { schnorr, hexToBytes, bytesToHex } from 'https://cdn.jsdelivr.net/npm/@noble/secp256k1@1.7.2/+esm';
@@ -431,7 +428,7 @@ function applyRemote(st){
     try{localStorage.setItem('mtc_cloud_data',JSON.stringify({updatedAt:st.updatedAt||Date.now(),data:st.data}))}catch(e){}
     try{localStorage.removeItem('mtc_data_v1')}catch(e){}
     try{IMPORT_D='shared cloud data ('+st.data.length+' lines)'}catch(e){}
-    applyOverrides();refreshAll();renderRemarks();renderCustomChips();
+    applyOverrides();refreshAll();renderCustomChips();
     try{const sq=$('sq');const q=((sq||{value:''}).value||'').trim().toLowerCase();renderStatus(q)}catch(e){}
     return true;
   }catch(e){return false}
